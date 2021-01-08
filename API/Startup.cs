@@ -42,14 +42,11 @@ namespace API
             services.AddControllers();
 
             //DB
-            services.AddDbContext<ProductDbContext>(x => x.UseSqlite(@"Data Source=Products.db;Cache=Shared", y => y.MigrationsAssembly("API")));
+            services.AddDbContext<ProductDbContext>(x => x.UseSqlServer(Configuration["ProductsConnectionString"], y => y.MigrationsAssembly("API")));
             services.AddScoped<IDbContext, ProductDbContext>();
 
             //Dapper queries
             services.AddScoped<IQueries<Product>, ProductQueries>();
-            SqlMapper.AddTypeHandler(new SqliteGuidTypeHandler());
-            SqlMapper.RemoveTypeMap(typeof(Guid));
-            SqlMapper.RemoveTypeMap(typeof(Guid?));
 
             //MediatR
             services.AddMediatR(typeof(Startup));

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Domain.Contracts;
 using Domain.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -24,7 +25,7 @@ namespace Infrastructure.Queries
         {
             var sql = "SELECT * FROM Products";
 
-            using (var connection = new SqliteConnection("Data Source=Products.db;Cache=Shared"))
+            using (var connection = new SqlConnection(_configuration["ProductsConnectionString"]))
             {
                 var result = await connection.QueryAsync<Product>(sql).ConfigureAwait(false);
                 return result.ToList();
@@ -35,7 +36,7 @@ namespace Infrastructure.Queries
         {
             var sql = "SELECT * FROM Products WHERE ProductId = @Id";
 
-            using (var connection = new SqliteConnection("Data Source=Products.db;Cache=Shared"))
+            using (var connection = new SqlConnection(_configuration["ProductsConnectionString"]))
             {
                 return await connection.QuerySingleOrDefaultAsync<Product>(sql, new { Id = id }).ConfigureAwait(false);
             }
